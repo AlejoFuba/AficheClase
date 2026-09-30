@@ -113,19 +113,19 @@
             position="0 -0.3 1" align="center" rotation="0 0 0">
       </a-text>
       <!-- <a-text value="Avatar" position="0 -0.3 1" align="center" width="1"></a-text> -->
-      <!-- <a-entity id="audioAmbiente" sound="src: #musica; loop: true; volume: 0.7; autoplay: false;"></a-entity> -->
+      <a-entity id="audioAmbiente" sound="src: #musica; loop: true; volume: 0.7; autoplay: true;"></a-entity>
 
     </a-entity>
   </a-scene>
 
-  <!-- <script>
+  <script>
   document.querySelector('#btn-iniciar').addEventListener('click', function () {
     const audio = document.querySelector('#audioAmbiente');
     audio.components.sound.playSound();   // "destraba" el audio con un gesto real
     audio.components.sound.pauseSound();  // lo dejamos en pausa, listo para que targetFound lo retome
     this.remove();
   });
-</script> -->
+</script>
 
   <script>
     const sceneEl    = document.querySelector('a-scene');
