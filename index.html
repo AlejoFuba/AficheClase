@@ -1,63 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Afiche AR</title>
-    <!-- libreria aframe -->
-    <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
-    <!-- libreria MindAR -->
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden;">
-    <!-- escena de aframe -->
-    <a-scene mindar-image="imageTargetSrc: ./assets/targets.mind; filterMinCF: 0.0001; filterBeta: 0.001;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-        <a-assets>
-            <!-- aqui van los recursos -->
-            <img src="./assets/we-bare-bears.png" id="osos">
-            <a-assets-item id="modelo3d" src="./assets/bear.glb"></a-assets-item>
-            <!-- <video 
-            id="mivideo"
-            src="./assets/720video.mp4"
-            preload="auto"
-            loop="true"
-            muted="true"
-            crossorigin="anonymous"
-            playsinline
-            webkit-playsinline
-            ></video> -->
-        </a-assets>
-        <!-- camara de la escena -->
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-        <a-entity mindar-image-target="targetIndex: 0">
-            <!-- aqui se colocan los elementos que salen en AR -->
-             <!-- carga de imagen -->
-            <a-plane src="#osos" position="0 0 0" width="1" height="0.5" rotation="0 0 0"></a-plane>
-            <!-- modelo 3d -->
-            <a-gltf-model rotation="0 0 0" position="0 0 0.1" scale="1 1 1" src="#modelo3d"></a-gltf-model>
-            <!-- textos -->
-            <a-text
-            value="Polar"
-            color="#000000"
-            align="center"
-            width="2"
-            position="0 -0.1 0.1"
-            ></a-text>
-            <!-- video -->
-            <!-- <a-video 
-            src="#mivideo" 
-            position="0 0 0.2" 
-            width="1.6" 
-            height="0.9"
-            ></a-video> -->
-        </a-entity>
-    </a-scene>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Avatar The last Airbender</title>
 
-    <!-- <script>
-        document.querySelector('[mindar-image-target]').addEventListener('targetFound', () => {
-            const video = document.querySelector('#mivideo');
-            video.play();
-        })
-    </script> -->
+  <!--
+    LIBRERÍAS
+    Orden obligatorio: primero A-Frame, luego MindAR.
+  -->
+  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <!-- aframe-extras: trae el componente animation-mixer (A-Frame solo NO reproduce animaciones de glTF) -->
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+  <!-- componente para fuentes personalizadas -->
+    <script src="https://unpkg.com/aframe-troika-text/dist/aframe-troika-text.min.js"></script>
+  <!-- hoja de estilos -->
+   <link rel="stylesheet" href="./css/avatar.css">
+</head>
+<body>
+
+  <!-- 1) MENSAJE INICIAL + BOTÓN -->
+  <div id="inicio">
+    <div class="tarjeta">
+      <h1>Apunta al afiche para vivir la experiencia</h1>
+      <button id="btn-iniciar" disabled>Cargando…</button>
+      <small>Sube el volumen y permite el acceso a la cámara.</small>
+    </div>
+  </div>
+
+  <div id="pista">Apunta al afiche para vivir la experiencia</div>
+
+  <!--
+    ESCENA AR
+    - imageTargetSrc: tu afiche compilado a .mind (Image Targets Compiler).
+      Aquí va el marcador de ejemplo oficial de MindAR para probar sin compilar.
+    - autoStart: false → la cámara arranca solo al tocar "Iniciar".
+    - uiLoading / uiScanning: no → usamos nuestra propia interfaz.
+  -->
+  <a-scene
+    mindar-image="imageTargetSrc: ./assets/aficheTarget.mind;
+                  autoStart: false;
+                  uiLoading: no;
+                  uiScanning: no;
+                  filterMinCF: 0.0001;
+                  filterBeta: 0.001"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+        <!-- modelo 3d -->
+      <a-asset-item id="modelo3d"
+        src="./assets/Appa.glb">
+      </a-asset-item>
+      <!-- imagen -->
+      <img id="elementos" src="./assets/elementos.png" crossorigin="anonymous" />
+      <!-- audio -->
+      <a-assets>
+        <audio id="musica" src="./assets/AvatarSong.mp3" loop preload="auto"></audio>
+      </a-assets>
+      <a-asset-item id="miFuente" src="./assets/Avatar_Airbender.ttf"></a-asset-item>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!--
+      CONTENIDO ANCLADO AL AFICHE
+      MindAR muestra automáticamente todo lo que hay dentro de esta entidad
+      cuando detecta el afiche, y lo oculta cuando lo pierde.
+    -->
+    <a-entity id="target" mindar-image-target="targetIndex: 0">
+
+      <!-- plano fondo -->
+       <a-plane
+        color="#EBD3A0"
+        width="1"
+        height="1.6"
+        position="0 0 0">
+       </a-plane>
+      <!-- PLANO: panel semitransparente sobre el afiche -->
+      <a-plane
+        src="#elementos"
+        material="transparent: true; alphaTest: 0.5"
+        position="0 0 0.1"
+        width="1"
+        height="1"
+        animation__aparecer="property: scale; from: 0 0 0; to: 1 1 1; dur: 500; easing: easeOutBack; startEvents: aparecer"
+        animation="property: rotation; to: 0 0 360; dur: 10000; easing: easeInOutQuad; loop: true; dir: normal">
+      </a-plane>
+
+      <!-- MODELO 3D: flotando sobre el plano -->
+      <a-gltf-model
+        id="modelo"
+        src="#modelo3d"
+        position="0 0 0.5"
+        rotation="0 0 0"
+        scale="1 1 1"
+        animation-mixer="clip: *; loop: repeat;"
+        animation="property: rotation; to: 0 360 0; dur: 5000; easing: easeInOutQuad; loop: true; dir: normal">
+      </a-gltf-model>
+      <!--  -->
+      <a-text
+            troika-text="align: center; color: #000000; font: #miFuente; value: Avatar"
+            position="0 -0.3 1" align="center" rotation="0 0 0">
+      </a-text>
+      <!-- <a-text value="Avatar" position="0 -0.3 1" align="center" width="1"></a-text> -->
+      <a-entity id="audioAmbiente" sound="src: #musica; loop: true; volume: 0.7; autoplay: false;"></a-entity>
+
+    </a-entity>
+  </a-scene>
+
+  <!-- <script>
+  document.querySelector('#btn-iniciar').addEventListener('click', function () {
+    const audio = document.querySelector('#audioAmbiente');
+    audio.components.sound.playSound();   // "destraba" el audio con un gesto real
+    audio.components.sound.pauseSound();  // lo dejamos en pausa, listo para que targetFound lo retome
+    this.remove();
+  });
+</script> -->
+
+  <script>
+    const sceneEl    = document.querySelector('a-scene');
+    const inicio     = document.querySelector('#inicio');
+    const btnIniciar = document.querySelector('#btn-iniciar');
+    const pista      = document.querySelector('#pista');
+    const musica     = document.querySelector('#musica');
+    const target     = document.querySelector('#target');
+    const plano      = document.querySelector('#plano');
+
+    let arSystem = null;
+    let audioDesbloqueado = false;  // ¿ya pasó el "permiso" del navegador?
+    let aficheDetectado   = false;  // ¿el afiche está en cámara ahora mismo?
+
+    /* ------------------------------------------------------------
+       A) Habilitar el botón cuando la escena y los assets cargaron
+       ------------------------------------------------------------ */
+    function escenaLista() {
+      arSystem = sceneEl.systems['mindar-image-system'];
+      btnIniciar.disabled = false;
+      btnIniciar.textContent = 'Iniciar';
+    }
+    if (sceneEl.hasLoaded) {
+      escenaLista();
+    } else {
+      sceneEl.addEventListener('loaded', escenaLista);
+    }
+
+    /* ------------------------------------------------------------
+       B) DESBLOQUEO DEL AUDIO EN MÓVILES
+       iOS Safari y Chrome Android solo permiten reproducir audio si
+       play() se llama DENTRO de un gesto del usuario (tap/clic).
+       El afiche se detecta más tarde (no es un gesto), así que
+       aprovechamos el tap en "Iniciar" para:
+         1. llamar play() → el navegador "autoriza" este <audio>
+         2. pausarlo de inmediato
+       Desde ese momento podemos darle play()/pause() desde código
+       cada vez que el afiche aparezca o desaparezca.
+       ------------------------------------------------------------ */
+    async function desbloquearAudio() {
+      try {
+        musica.load();                 // iOS a veces ignora preload="auto"
+        await musica.play();
+        // Si el afiche ya estaba en cámara al tocar, no lo pausamos
+        if (!aficheDetectado) {
+          musica.pause();
+          musica.currentTime = 0;
+        }
+        audioDesbloqueado = true;
+      } catch (err) {
+        console.warn('El navegador no permitió desbloquear el audio:', err);
+      }
+    }
+
+    /* ------------------------------------------------------------
+       C) Tap en "Iniciar": desbloquear audio + encender cámara
+       ------------------------------------------------------------ */
+    btnIniciar.addEventListener('click', async () => {
+      btnIniciar.disabled = true;
+
+      // Importante: el desbloqueo va PRIMERO, aún dentro del gesto del usuario
+      await desbloquearAudio();
+
+      inicio.classList.add('oculto');
+      pista.style.display = 'block';
+      arSystem.start();   // pide permiso de cámara e inicia el tracking
+    });
+
+    /* ------------------------------------------------------------
+       D) Afiche detectado → mostrar contenido + reproducir música
+          (el plano y el modelo los muestra MindAR automáticamente)
+       ------------------------------------------------------------ */
+    target.addEventListener('targetFound', () => {
+      aficheDetectado = true;
+      pista.style.display = 'none';
+      plano.emit('aparecer');          // animación de entrada del plano
+
+      if (audioDesbloqueado) {
+        musica.play().catch(err => console.warn('No se pudo reproducir:', err));
+      }
+    });
+
+    /* ------------------------------------------------------------
+       E) Afiche perdido → pausar música
+          pause() conserva la posición: al volver a detectarlo,
+          la canción continúa donde iba. Si prefieres que reinicie,
+          descomenta la línea de currentTime.
+       ------------------------------------------------------------ */
+    target.addEventListener('targetLost', () => {
+      aficheDetectado = false;
+      pista.style.display = 'block';
+      musica.pause();
+      // musica.currentTime = 0;
+    });
+
+    /* ------------------------------------------------------------
+       F) Si el usuario cambia de app o bloquea el teléfono,
+          pausamos; al volver, solo reanudamos si el afiche sigue en cámara
+       ------------------------------------------------------------ */
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        musica.pause();
+      } else if (aficheDetectado && audioDesbloqueado) {
+        musica.play().catch(() => {});
+      }
+    });
+  </script>
 </body>
 </html>
