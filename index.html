@@ -122,7 +122,7 @@
   document.querySelector('#btn-iniciar').addEventListener('click', function () {
     const audio = document.querySelector('#audioAmbiente');
     audio.components.sound.playSound();   // "destraba" el audio con un gesto real
-    audio.components.sound.pauseSound();  // lo dejamos en pausa, listo para que targetFound lo retome
+    // audio.components.sound.pauseSound();  // lo dejamos en pausa, listo para que targetFound lo retome
     this.remove();
   });
 </script>
