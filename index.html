@@ -32,6 +32,14 @@
   <div id="pista">Apunta al afiche para vivir la experiencia</div>
 
   <!--
+    AUDIO
+    - Reemplaza la ruta por tu archivo (mp3 recomendado: compatible con iOS y Android).
+    - "loop" para que la música se repita mientras el afiche esté detectado.
+    - NO usamos "autoplay": los navegadores móviles lo bloquean sin interacción previa.
+  -->
+  <!-- <audio id="musica" src="./assets/AvatarSong.mp3" loop preload="auto"></audio> -->
+
+  <!--
     ESCENA AR
     - imageTargetSrc: tu afiche compilado a .mind (Image Targets Compiler).
       Aquí va el marcador de ejemplo oficial de MindAR para probar sin compilar.
@@ -58,9 +66,7 @@
       <!-- imagen -->
       <img id="elementos" src="./assets/elementos.png" crossorigin="anonymous" />
       <!-- audio -->
-      <a-assets>
-        <audio id="musica" src="./assets/AvatarSong.mp3" loop preload="auto"></audio>
-      </a-assets>
+      <audio id="musica" src="./assets/AvatarSong.mp3" loop preload="auto"></audio>
       <a-asset-item id="miFuente" src="./assets/Avatar_Airbender.ttf"></a-asset-item>
     </a-assets>
 
@@ -107,7 +113,7 @@
             position="0 -0.3 1" align="center" rotation="0 0 0">
       </a-text>
       <!-- <a-text value="Avatar" position="0 -0.3 1" align="center" width="1"></a-text> -->
-      <a-entity id="audioAmbiente" sound="src: #musica; loop: true; volume: 0.7; autoplay: false;"></a-entity>
+      <!-- <a-entity id="audioAmbiente" sound="src: #musica; loop: true; volume: 0.7; autoplay: false;"></a-entity> -->
 
     </a-entity>
   </a-scene>
